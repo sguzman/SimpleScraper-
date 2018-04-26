@@ -8,6 +8,14 @@ namespace Node {
   }
 
   template <unsigned long n>
+  static inline const char * nodeAttr(__restrict const GumboNode * const root, const std::array<const unsigned short, n>& arr, __restrict const char * const att, const unsigned short idx = 0u) noexcept  {
+    if (idx == n) {
+      return attr(root, att);
+    }
+    return nodeAttr(static_cast<const GumboNode *>(root->v.element.children.data[arr[idx]]), arr, att, idx + 1);
+  }
+
+  template <unsigned long n>
   static inline const GumboNode * node(__restrict const GumboNode * const root, const std::array<const unsigned short, n>& arr, const unsigned short idx = 0u) noexcept  {
     if (idx == n) {
       return root;
