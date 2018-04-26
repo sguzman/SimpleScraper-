@@ -1,2 +1,2 @@
-# SimpleScraper-
+# SimpleScraper++
 A simple scraper
