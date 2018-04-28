@@ -13,7 +13,7 @@ namespace Curl {
     return size*nmemb;
   }
 
-  inline static const std::string get(const std::string& url) noexcept {
+  inline static const std::string get(const std::string& url, const bool isHttp = false) noexcept {
     CURL *curl;
     CURLcode res;
 
@@ -26,8 +26,8 @@ namespace Curl {
 
       curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); //only for https
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1L); //only for https
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, isHttp); //only for https
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, isHttp); //only for https
       curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlWrite_CallbackFunc_StdString);
       curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
       curl_easy_setopt (curl, CURLOPT_VERBOSE, 0L); //remove this to disable verbose output
