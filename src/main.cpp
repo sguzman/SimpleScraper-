@@ -1,15 +1,12 @@
 #include <iostream>
-#include <gumbo.h>
-#include "article-links.hxx"
+#include "http-get.hxx"
 
-constexpr static const char * const indent_chars = " ";
+constexpr static const char * const host{"23.95.221.108"};
 
-int main() noexcept {
-  const unsigned short page = 2;
-  const auto pages = Article::links(page);
-  for (const auto &href : pages) {
-    std::cout << href << std::endl;
-  }
+int main() {
+  const auto& html{HTTP::get(host)};
+  std::cout << html.length() << std::endl;
+  std::cout << html << std::endl;
 
   return EXIT_SUCCESS;
 }
