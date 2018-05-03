@@ -1,23 +1,15 @@
 #include <iostream>
-#include <cpp_redis/cpp_redis>
-#include "http-get.hxx"
+#include "redis-http.hxx"
 
-constexpr static const char * const host{"23.95.221.108"};
+constexpr static const char * const path{"/page/2"};
 
 int main() {
-  cpp_redis::client client;
-  client.connect();
+  Redis::redis_init();
 
-  client.set("hello", "42");
-  {
-    client.sync_commit();
-  }
+  const auto& html = Redis::redis_get(path);
+  std::cout << html << std::endl;
 
-  auto helloFtr{client.get("hello")};
-  {
-    client.sync_commit();
-  }
-  std::cout << helloFtr.get() << std::endl;
 
+  Redis::redis_kill();
   return EXIT_SUCCESS;
 }
