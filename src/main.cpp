@@ -1,5 +1,4 @@
 #include <iostream>
-#include <gumbo.h>
 #include "redis-http.hxx"
 #include "articles.hxx"
 
@@ -14,7 +13,6 @@ int main() {
       std::cout << j << std::endl;
     }
   }
-
 
   Redis::redis_kill();
   return EXIT_SUCCESS;
