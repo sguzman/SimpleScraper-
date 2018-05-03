@@ -12,6 +12,11 @@
 #include <iostream>
 
 namespace HTTP {
+  static const std::string getStr{"GET "};
+  static const std::string endl{"\r\n"};
+  constexpr static const unsigned short BUFFER_SIZE{1024};
+  constexpr static const in_port_t port{80};
+
   inline static int socket_connect(const char * const host, in_port_t port){
     constexpr const int on{1};
 
@@ -41,16 +46,14 @@ namespace HTTP {
     return sock;
   }
 
-  inline static const std::string get(const char * const host) {
-    constexpr static const unsigned short BUFFER_SIZE{1024};
-    constexpr static const char * const get{"GET /\r\n"};
-    constexpr static const in_port_t port{80};
+  inline static const std::string get(const char * const host, const char * const path) {
+    const std::string url{getStr + path +  endl};
 
     int fd;
     char buffer[BUFFER_SIZE];
 
     fd = socket_connect(host, port);
-    write(fd, get, strlen(get));
+    write(fd, url.c_str(), url.size());
     bzero(buffer, BUFFER_SIZE);
 
     std::string buf{};
