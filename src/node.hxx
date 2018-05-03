@@ -15,6 +15,17 @@ namespace Node {
     return nodeAttr(static_cast<const GumboNode *>(root->v.element.children.data[arr[idx]]), arr, att, idx + 1);
   }
 
+  template <unsigned long n, unsigned long m>
+  static inline std::array<char *, n> nodesAttr(const std::array<const GumboInternalNode*, n>& roots, const std::array<const unsigned short, m>& arr, __restrict const char * const att) noexcept  {
+    std::array<char* , n> nodes{};
+    {
+      for (auto i{0u}; i < n; ++i) {
+        nodes[i] = const_cast<char*>(nodeAttr(roots[i], arr, att));
+      }
+    }
+    return nodes;
+  }
+
   template <unsigned long n>
   static inline const GumboNode * node(__restrict const GumboNode * const root, const std::array<const unsigned short, n>& arr, const unsigned short idx = 0u) noexcept  {
     if (idx == n) {

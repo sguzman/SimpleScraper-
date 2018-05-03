@@ -38,7 +38,7 @@ namespace Redis {
       client.hset("ebooks", url, html);
       {
         client.sync_commit();
-        std::cout << "Inserted key -> " << host << " with len(value) -> " << html.length() << std::endl;
+        std::cout << "Inserted key -> " << url << " with len(value) -> " << html.length() << std::endl;
       }
     }
 
