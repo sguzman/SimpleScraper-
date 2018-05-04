@@ -23,12 +23,14 @@ inline static const std::string lstrip(const std::string& str, const std::string
 
 inline static void run_me_at_exit() noexcept {
   {
-    std::ofstream output{itemFile, std::ios::trunc | std::ios::binary};
+    std::ofstream output{itemFile, std::ios::binary};
     if (!itemCache.SerializeToOstream(&output)) {
       std::cerr << "Failed to write address book." << std::endl;
     } else {
       std::cout << "Wrote " << itemCache.links().size() << " entries to file" << std::endl;
     }
+    output.flush();
+    output.close();
   }
 }
 
