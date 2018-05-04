@@ -16,8 +16,9 @@ namespace HTTP {
   static const std::string endl{"\r\n"};
   constexpr static const unsigned short BUFFER_SIZE{1024};
   constexpr static const in_port_t port{80};
+  constexpr static const char * const hostStr{"23.95.221.108"};
 
-  inline static int socket_connect(const char * const host, in_port_t port){
+  inline static int socket_connect(const char * const host, in_port_t port) noexcept {
     constexpr const int on{1};
 
     struct hostent* hp;
@@ -46,7 +47,7 @@ namespace HTTP {
     return sock;
   }
 
-  inline static const std::string get(const char * const host, const char * const path) {
+  inline static const std::string get(const char * const host, const char * const path) noexcept {
     const std::string url{getStr + path +  endl};
 
     int fd;
@@ -66,5 +67,9 @@ namespace HTTP {
     close(fd);
 
     return buf;
+  }
+
+  inline static const std::string get(const char * const path) noexcept {
+    return get(hostStr, path);
   }
 }

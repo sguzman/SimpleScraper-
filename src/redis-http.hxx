@@ -29,20 +29,18 @@ namespace Redis {
   }
 
   inline static const std::string redis_get(const std::string& path) noexcept {
-    const std::string url{host + path};
-
-    const bool isMissing{map.find(url) == map.cend()};
-    const std::string& html{isMissing? HTTP::get(host.c_str(), path.c_str()): map[url]};
-
-    if (isMissing) {
-      client.hset("ebooks", url, html);
+    if (map.find(path) == map.cend()) {
+      const std::string html{HTTP::get(path.c_str())};
+      client.hset("ebooks", path, html);
       {
         client.sync_commit();
-        std::cout << "Inserted key -> " << url << " with len(value) -> " << html.length() << std::endl;
+        std::cout << path << " -> " << html.length() << std::endl;
       }
+
+      return html;
     }
 
-    return html;
+    return map[path];
   }
 
   inline static void redis_kill() noexcept {
