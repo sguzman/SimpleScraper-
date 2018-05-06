@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <brotli/encode.h>
 #include "redis-http.hxx"
 #include "articles.hxx"
 

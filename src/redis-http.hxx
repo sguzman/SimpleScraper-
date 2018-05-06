@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cpp_redis/cpp_redis>
 #include <brotli/encode.h>
+#include <brotli/decode.h>
 #include "http-get.hxx"
 
 namespace Redis {
@@ -39,7 +40,7 @@ namespace Redis {
       {
         uint8_t in_buffer[buf_size];
         strcpy(reinterpret_cast<char *>(in_buffer), html.c_str());
-        BrotliEncoderCompress(BROTLI_MAX_QUALITY,
+        auto out = BrotliEncoderCompress(BROTLI_MAX_QUALITY,
                                                BROTLI_DEFAULT_WINDOW,
                                                BROTLI_MODE_TEXT,
                                                html.size(),
@@ -47,20 +48,35 @@ namespace Redis {
                                                &size,
                                                out_buffer
         );
+        std::cout << out << std::endl;
       }
 
       std::string new_str{reinterpret_cast<const char * const>(out_buffer), size};
-
       client.hset("ebooks", path, new_str);
       {
         client.sync_commit();
-        std::cout << path << " -> " << html.length() << std::endl;
+        std::cout << path << " -> " << new_str.length() << std::endl;
       }
 
       return html;
     }
 
-    return map[path];
+    const std::string str{map[path]};
+    std::string out{};
+    out.resize(buf_size);
+    {
+      size_t size{str.length()};
+      uint8_t out_buffer[buf_size];
+      {
+        for (auto i{0u}; i < str.length(); ++i) {
+          out_buffer[i] = static_cast<uint8_t>(str[i]);
+        }
+      }
+      size_t out_size{buf_size};
+      BrotliDecoderDecompress(size, out_buffer, &out_size, reinterpret_cast<uint8_t *>(out.data()));
+    }
+
+    return out;
   }
 
   inline static void redis_kill() noexcept {
