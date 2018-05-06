@@ -38,7 +38,7 @@ namespace Redis {
       {
         uint8_t in_buffer[buf_size];
         strcpy(reinterpret_cast<char *>(in_buffer), html.c_str());
-        auto out = BrotliEncoderCompress(BROTLI_MAX_QUALITY,
+        BrotliEncoderCompress(BROTLI_MAX_QUALITY,
                                                BROTLI_DEFAULT_WINDOW,
                                                BROTLI_MODE_TEXT,
                                                html.size(),
@@ -46,7 +46,6 @@ namespace Redis {
                                                &size,
                                                out_buffer
         );
-        std::cout << out << std::endl;
       }
 
       std::string new_str{reinterpret_cast<const char * const>(out_buffer), size};
