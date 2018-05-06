@@ -1,9 +1,12 @@
 #pragma once
 #include <iostream>
 #include <cpp_redis/cpp_redis>
+#include <brotli/encode.h>
 #include "http-get.hxx"
 
 namespace Redis {
+  constexpr thread_local static const unsigned int buf_size{50000u};
+
   static cpp_redis::client client;
   static std::unordered_map<std::string, std::string> map{};
   static const std::string host{"23.95.221.108"};
@@ -31,7 +34,24 @@ namespace Redis {
   inline static const std::string redis_get(const std::string& path) noexcept {
     if (map.find(path) == map.cend()) {
       const std::string html{HTTP::get(path.c_str())};
-      client.hset("ebooks", path, html);
+      size_t size{buf_size};
+      uint8_t out_buffer[buf_size];
+      {
+        uint8_t in_buffer[buf_size];
+        strcpy(reinterpret_cast<char *>(in_buffer), html.c_str());
+        BrotliEncoderCompress(BROTLI_MAX_QUALITY,
+                                               BROTLI_DEFAULT_WINDOW,
+                                               BROTLI_MODE_TEXT,
+                                               html.size(),
+                                               in_buffer,
+                                               &size,
+                                               out_buffer
+        );
+      }
+
+      std::string new_str{reinterpret_cast<const char * const>(out_buffer), size};
+
+      client.hset("ebooks", path, new_str);
       {
         client.sync_commit();
         std::cout << path << " -> " << html.length() << std::endl;
