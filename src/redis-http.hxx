@@ -34,7 +34,10 @@ namespace Redis {
     if (map.find(path) == map.cend()) {
       const std::string html{HTTP::get(path.c_str())};
       size_t size{buf_size};
-      uint8_t out_buffer[buf_size];
+      std::string out_buffer{};
+      {
+        out_buffer.resize(buf_size);
+      }
       {
         uint8_t in_buffer[buf_size];
         strcpy(reinterpret_cast<char *>(in_buffer), html.c_str());
@@ -43,19 +46,22 @@ namespace Redis {
                                                BROTLI_MODE_TEXT,
                                                html.size(),
                                                in_buffer,
-                                               &size,
-                                               out_buffer
+                                               &size, reinterpret_cast<uint8_t *>(out_buffer.data())
         );
+        out_buffer.resize(size);
       }
 
-      std::string new_str{reinterpret_cast<const char * const>(out_buffer), size};
-      client.hset("ebooks", path, new_str);
+      client.hset("ebooks", path, out_buffer);
       {
         client.sync_commit();
-        std::cout << path << " -> " << new_str.length() << std::endl;
+        std::cout << path << " -> " << out_buffer.length() << std::endl;
       }
 
       return html;
+    }
+
+    {
+      std::cout << "Hit cache for " << path << std::endl;
     }
 
     const std::string str{map[path]};
