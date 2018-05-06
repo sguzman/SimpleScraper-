@@ -6,15 +6,13 @@
 #include "http-get.hxx"
 
 namespace Redis {
-  constexpr thread_local static const unsigned int buf_size{50000u};
+  constexpr static const unsigned int buf_size{50000u};
 
   static cpp_redis::client client;
   static std::unordered_map<std::string, std::string> map{};
-  static const std::string host{"23.95.221.108"};
 
   inline static void redis_init() noexcept {
     client.connect();
-
     {
       auto ftr{client.hgetall("ebooks")};
       {
