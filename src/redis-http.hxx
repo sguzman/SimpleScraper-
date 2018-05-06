@@ -59,9 +59,7 @@ namespace Redis {
     }
 
     {
-      {
-        std::cout << "Hit cache for " << path << std::endl;
-      }
+      std::cout << "Hit cache for " << path << std::endl;
 
       const std::string str{map[path]};
       std::string out{};
